@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>114-2 期末考數學：互動遊戲題庫</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Header Controls (Always Visible) -->
+    <header class="app-header">
+      <div class="logo-text">
+        <span>✏️</span> 數學小達人闖關賽
+      </div>
+      <div class="controls">
+        <button id="soundToggleBtn" class="icon-btn" title="音效開/關">🔊</button>
+        <button id="themeToggleBtn" class="icon-btn" title="切換深淺色模式">🌓</button>
+        <button id="resetProgressBtn" class="icon-btn" title="重設所有進度" style="color: var(--danger)">🗑️</button>
+      </div>
+    </header>
+
+    <!-- 1. HOME SCREEN -->
+    <div id="homeScreen" class="screen active">
+      <div class="home-content">
+        <div style="font-size: 5rem; margin-bottom: 15px; animation: float 3s infinite ease-in-out">🎓</div>
+        <h1 class="game-title">114-2期末考<br>數學重點大闖關</h1>
+        <p class="game-desc">
+          歡迎來到數學挑戰賽！本遊戲專為國小二年級期末考設計，包含兩步驟問題、公尺與公分、分類與立體形體、分裝與平分、分數等 5 大單元共 100 題。讓我們一起邊玩邊複習，拿滿分吧！
+        </p>
+        <button id="startPlayBtn" class="start-btn">
+          <span>🎮</span> 開始挑戰
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. LEVEL SELECT SCREEN -->
+    <div id="levelSelectScreen" class="screen">
+      <div class="back-nav" onclick="showScreen('homeScreen')">
+        <span>⬅️</span> 返回首頁
+      </div>
+      <h2 class="level-select-title">🎯 請選擇闖關單元</h2>
+      <div class="level-grid" id="levelGrid">
+        <!-- Level cards will be programmatically rendered here -->
+      </div>
+      <div class="text-center" style="margin-top: 10px;">
+        <button id="fullChallengeBtn" class="start-btn" style="background: linear-gradient(135deg, var(--secondary), #00cec9); margin: 0 auto;">
+          <span>🔥</span> 全範圍隨機大挑戰 (20題)
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. PLAY SCREEN -->
+    <div id="playScreen" class="screen">
+      <!-- Game Info Bar -->
+      <div class="game-info-bar">
+        <div class="badge" id="currentUnitBadge" style="background: rgba(108, 92, 231, 0.1); color: var(--primary)">
+          單元 6
+        </div>
+        <div class="progress-container">
+          <div id="progressBarFill" class="progress-bar-fill"></div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <div class="badge streak" id="streakBadge">
+            🔥 連擊 0
+          </div>
+          <div class="badge score" id="scoreBadge" style="color: var(--secondary)">
+            🌟 分數 0
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Content -->
+      <div class="question-card" id="questionCard">
+        <h3 class="question-text" id="questionText">題目加載中...</h3>
+        
+        <!-- Interactive Drawing Container -->
+        <div class="svg-canvas-container" id="svgCanvasContainer">
+          <!-- SVGs will be programmatically drawn here -->
+        </div>
+
+        <!-- Multiple Choice Buttons -->
+        <div class="choices-grid" id="choicesGrid">
+          <!-- Choice buttons will be programmatically generated here -->
+        </div>
+      </div>
+      
+      <!-- Particle explosion canvas container -->
+      <div id="particleContainer" class="particle-container"></div>
+    </div>
+
+    <!-- 4. RESULTS SCREEN -->
+    <div id="resultsScreen" class="screen">
+      <div class="result-content">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <h2 class="score-text" id="resultScoreText">挑戰成功！</h2>
+        <p class="result-msg" id="resultMsg">
+          您完成了本次挑戰，答對了 18 題，獲得 90 分！繼續保持喔！
+        </p>
+        
+        <div class="result-actions">
+          <button id="restartLevelBtn" class="start-btn">
+            <span>🔄</span> 重新挑戰本關
+          </button>
+          <button id="returnLevelSelectBtn" class="flat-btn">
+            <span>🎯</span> 選擇其他單元
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EXPLANATIONS & FEEDBACK MODAL -->
+  <div id="feedbackModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-icon" id="feedbackIcon">🎉</div>
+      <h3 class="modal-title" id="feedbackTitle">答對了！</h3>
+      <p class="modal-body" id="feedbackBody">
+        解析內容加載中...
+      </p>
+      <button id="feedbackCloseBtn" class="modal-btn">繼續下挑戰</button>
+    </div>
+  </div>
+
+  <!-- Script tags -->
+  <script src="questions.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
