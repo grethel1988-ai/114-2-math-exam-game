@@ -1549,14 +1549,36 @@ function renderLevelGrid() {
   });
 }
 
+// Fisher-Yates 洗牌演算法，確保極致的隨機性
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 // --- 開始關卡挑戰 ---
 function startLevel(levelNum) {
   currentLevel = levelNum;
   
   if (levelNum === 'full') {
-    // 全範圍挑戰：從 100 題中隨機抽取 20 題
-    const shuffled = [...QUESTIONS].sort(() => 0.5 - Math.random());
-    questionsQueue = shuffled.slice(0, 20);
+    // 全範圍挑戰：從 100 題中，為每個單元隨機選 10 題，共 50 題
+    const units = [6, 7, 8, 9, 10];
+    let selectedQuestions = [];
+    
+    units.forEach(u => {
+      // 篩選出該單元的所有題目
+      const unitQuestions = QUESTIONS.filter(q => q.unit === u);
+      // 隨機打亂該單元的所有題目
+      const shuffledUnit = shuffleArray([...unitQuestions]);
+      // 抽取前 10 題
+      const selected = shuffledUnit.slice(0, 10);
+      selectedQuestions = selectedQuestions.concat(selected);
+    });
+    
+    // 再將這 50 題打亂，避免依單元順序排列
+    questionsQueue = shuffleArray(selectedQuestions);
   } else {
     // 單一單元練習：過濾該單元的 20 題
     questionsQueue = QUESTIONS.filter(q => q.unit === levelNum);
@@ -1603,7 +1625,7 @@ function loadQuestion(index) {
   const choicesGrid = document.getElementById("choicesGrid");
   choicesGrid.innerHTML = "";
   
-  const choices = [...q.options].sort(() => 0.5 - Math.random());
+  const choices = shuffleArray([...q.options]);
   
   // 渲染選項按鈕
   const letters = ["A", "B", "C", "D"];
