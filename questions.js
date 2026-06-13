@@ -589,7 +589,7 @@ const QUESTIONS = [
     answer: "ㄅ $\rightarrow$ ㄆ $\rightarrow$ ㄉ $\rightarrow$ ㄈ",
     optionsRaw: ["ㄅ", "ㄆ", "ㄇ", "ㄉ", "ㄈ"],
     explanation: "符合「正(ㄅ) $\rightarrow$ 長(ㄆ) $\rightarrow$ 正(ㄉ) $\rightarrow$ 長(ㄈ)」的順序，ㄇ是球體不符合規律。",
-    svgType: "none" // We will draw custom buttons/shapes in UI
+    svgType: "dwarf-maze"
   },
   {
     id: "u8_diagram_2",
@@ -612,8 +612,8 @@ const QUESTIONS = [
     question: "看圖中兩組紙板展開圖，哪一組的面可以組合成一個長方體？",
     options: ["甲組", "乙組", "兩組都可以", "兩組都不可以"],
     answer: "甲組",
-    explanation: "甲組包含 6 個面且具備對稱性（4個相同長方形，2個相同正方形），乙組只有 5 個長方形和 1 個三角形，無法組成。",
-    svgType: "none"
+    explanation: "甲組包含 6 個面且具備對稱性（4個相同長方形，2個相同正方形），乙組只有 5 個長方形 and 1 個三角形，無法組成。",
+    svgType: "box-nets"
   },
   {
     id: "u8_diagram_4",
@@ -639,7 +639,7 @@ const QUESTIONS = [
     options: ["6 件", "7 件", "14 件", "10 件"],
     answer: "6 件",
     explanation: "上衣包含短袖 4 件與長袖 2 件，一共有 4 + 2 = 6 件。",
-    svgType: "none"
+    svgType: "clothes-tally"
   },
   {
     id: "u8_word_1",
@@ -848,7 +848,7 @@ const QUESTIONS = [
     options: ["每 6 顆裝一袋，共裝成 4 袋", "每 4 顆裝一袋，共裝成 6 袋", "每 6 顆裝一袋，共裝成 24 袋", "每 24 顆裝一袋，共裝成 4 袋"],
     answer: "每 6 顆裝一袋，共裝成 4 袋",
     explanation: "每次減去 6，一共減了 4 次才減完（得0），代表每 6 顆裝一袋，共裝成 4 袋。",
-    svgType: "none"
+    svgType: "marbles-subtraction"
   },
   {
     id: "u9_diagram_5",
@@ -858,7 +858,7 @@ const QUESTIONS = [
     options: ["不公平，每人應分到 6 根", "公平，每人應分到 6 根", "不公平，每人應分到 5 根", "公平，每人應分到 7 根"],
     answer: "不公平，每人應分到 6 根",
     explanation: "兩個人分到的數量不同，所以是不公平的（非平分）。如果要公平，每人要分到 12 ÷ 2 = 6 根。",
-    svgType: "none"
+    svgType: "corn-division"
   },
   {
     id: "u9_word_1",
@@ -1022,7 +1022,7 @@ const QUESTIONS = [
     options: ["圖形 B 有平分，圖形 A 沒有", "圖形 A 有平分，圖形 B 沒有", "兩個圖形都有平分", "兩個圖形都沒有平分"],
     answer: "圖形 B 有平分，圖形 A 沒有",
     explanation: "圖形 A 的切片大小不均勻，不符合平分定義。圖形 B 切成 4 個完全一樣大的三角形，屬於平分。",
-    svgType: "none" // The game will draw custom A/B diagrams side by side
+    svgType: "fair-share-compare"
   },
   {
     id: "u10_diagram_2",
@@ -1062,7 +1062,7 @@ const QUESTIONS = [
     options: ["國旗甲", "國旗乙", "兩個都是", "兩個都不是"],
     answer: "國旗甲",
     explanation: "國旗甲平均分成三等分，紅色剛好佔其中一份，代表 1/3。國旗乙沒有被均等平分。",
-    svgType: "none"
+    svgType: "flag-compare"
   },
   {
     id: "u10_diagram_5",
@@ -1072,7 +1072,7 @@ const QUESTIONS = [
     options: ["子翔", "莉芸", "兩個人一樣多", "無法比較"],
     answer: "子翔",
     explanation: "相同的紙平分成 4 份的一份（1/4）大於平分成 8 份的一份（1/8）。圖形顯示子翔的藍色區塊比莉芸的大。",
-    svgType: "none" // UI will draw two fraction grids/bars to compare
+    svgType: "paper-compare"
   },
   {
     id: "u10_word_1",

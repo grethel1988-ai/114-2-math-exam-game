@@ -767,6 +767,711 @@ function renderQuestionSVG(questionObj) {
       }
     }
   }
+  else if (type === "dwarf-maze") {
+    // ㄅ: 正方體, ㄆ: 長方體, ㄇ: 球體, ㄉ: 正方體, ㄈ: 長方體
+    // 繪製路徑連接線
+    const pathLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathLine.setAttribute("d", "M 30 50 L 80 50 L 55 120 L 125 120");
+    pathLine.setAttribute("fill", "none");
+    pathLine.setAttribute("stroke", "var(--warning)");
+    pathLine.setAttribute("stroke-width", "2.5");
+    pathLine.setAttribute("stroke-dasharray", "4,4");
+    svg.appendChild(pathLine);
+
+    // 畫各個立體形體
+    drawDwarfCube(30, 40, 20, "ㄅ", "var(--primary)"); // ㄅ: 正方體
+    drawDwarfRect(80, 40, 26, 16, "ㄆ", "var(--secondary)"); // ㄆ: 長方體
+    drawDwarfSphere(145, 40, 10, "ㄇ"); // ㄇ: 球體
+    drawDwarfCube(55, 110, 20, "ㄉ", "var(--primary)"); // ㄉ: 正方體
+    drawDwarfRect(125, 110, 26, 16, "ㄈ", "var(--secondary)"); // ㄈ: 長方體
+
+    // 在終點旁畫個小房子 🏠 裝飾
+    const house = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    house.setAttribute("x", "150");
+    house.setAttribute("y", "125");
+    house.setAttribute("font-size", "22");
+    house.textContent = "🏠";
+    svg.appendChild(house);
+
+    function drawDwarfCube(cx, cy, size, label, color) {
+      const half = size / 2;
+      const dx = size * 0.35;
+      const dy = size * 0.25;
+
+      // Front
+      const f = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      f.setAttribute("points", `${cx-half},${cy-half} ${cx+half},${cy-half} ${cx+half},${cy+half} ${cx-half},${cy+half}`);
+      f.setAttribute("fill", color);
+      f.setAttribute("stroke", "var(--dark)");
+      f.setAttribute("stroke-width", "1.2");
+      svg.appendChild(f);
+
+      // Top
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      t.setAttribute("points", `${cx-half},${cy-half} ${cx-half+dx},${cy-half-dy} ${cx+half+dx},${cy-half-dy} ${cx+half},${cy-half}`);
+      t.setAttribute("fill", "#ffeaa7");
+      t.setAttribute("stroke", "var(--dark)");
+      t.setAttribute("stroke-width", "1.2");
+      svg.appendChild(t);
+
+      // Right
+      const r = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      r.setAttribute("points", `${cx+half},${cy-half} ${cx+half+dx},${cy-half-dy} ${cx+half+dx},${cy+half-dy} ${cx+half},${cy+half}`);
+      r.setAttribute("fill", "var(--primary-light)");
+      r.setAttribute("stroke", "var(--dark)");
+      r.setAttribute("stroke-width", "1.2");
+      svg.appendChild(r);
+
+      // Label
+      const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txt.setAttribute("x", cx + dx/2);
+      txt.setAttribute("y", cy + half + 12);
+      txt.setAttribute("font-size", "11");
+      txt.setAttribute("font-weight", "bold");
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("fill", "var(--dark)");
+      txt.textContent = label;
+      svg.appendChild(txt);
+    }
+
+    function drawDwarfRect(cx, cy, w, h, label, color) {
+      const hw = w / 2;
+      const hh = h / 2;
+      const dx = w * 0.3;
+      const dy = h * 0.35;
+
+      // Front
+      const f = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      f.setAttribute("points", `${cx-hw},${cy-hh} ${cx+hw},${cy-hh} ${cx+hw},${cy+hh} ${cx-hw},${cy+hh}`);
+      f.setAttribute("fill", color);
+      f.setAttribute("stroke", "var(--dark)");
+      f.setAttribute("stroke-width", "1.2");
+      svg.appendChild(f);
+
+      // Top
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      t.setAttribute("points", `${cx-hw},${cy-hh} ${cx-hw+dx},${cy-hh-dy} ${cx+hw+dx},${cy-hh-dy} ${cx+hw},${cy-hh}`);
+      t.setAttribute("fill", "#55efc4");
+      t.setAttribute("stroke", "var(--dark)");
+      t.setAttribute("stroke-width", "1.2");
+      svg.appendChild(t);
+
+      // Right
+      const r = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      r.setAttribute("points", `${cx+hw},${cy-hh} ${cx+hw+dx},${cy-hh-dy} ${cx+hw+dx},${cy+hh-dy} ${cx+hw},${cy+hh}`);
+      r.setAttribute("fill", "#a29bfe");
+      r.setAttribute("stroke", "var(--dark)");
+      r.setAttribute("stroke-width", "1.2");
+      svg.appendChild(r);
+
+      // Label
+      const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txt.setAttribute("x", cx + dx/2);
+      txt.setAttribute("y", cy + hh + 12);
+      txt.setAttribute("font-size", "11");
+      txt.setAttribute("font-weight", "bold");
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("fill", "var(--dark)");
+      txt.textContent = label;
+      svg.appendChild(txt);
+    }
+
+    function drawDwarfSphere(cx, cy, r, label) {
+      const s = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      s.setAttribute("cx", cx);
+      s.setAttribute("cy", cy);
+      s.setAttribute("r", r);
+      s.setAttribute("fill", "#ff7675");
+      s.setAttribute("stroke", "var(--dark)");
+      s.setAttribute("stroke-width", "1.2");
+      svg.appendChild(s);
+
+      // Highlight
+      const hl = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      hl.setAttribute("cx", cx - r*0.3);
+      hl.setAttribute("cy", cy - r*0.3);
+      hl.setAttribute("r", r*0.25);
+      hl.setAttribute("fill", "white");
+      hl.setAttribute("opacity", "0.6");
+      svg.appendChild(hl);
+
+      // Label
+      const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txt.setAttribute("x", cx);
+      txt.setAttribute("y", cy + r + 12);
+      txt.setAttribute("font-size", "11");
+      txt.setAttribute("font-weight", "bold");
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("fill", "var(--dark)");
+      txt.textContent = label;
+      svg.appendChild(txt);
+    }
+  }
+  else if (type === "box-nets") {
+    // 繪製展開圖對比：左邊甲組（正確），右邊乙組（錯誤，有三角形）
+    // 甲組 (x 中心 50)
+    drawNet(35, 30, true);
+    const txtA = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txtA.setAttribute("x", "50");
+    txtA.setAttribute("y", "150");
+    txtA.setAttribute("font-size", "11");
+    txtA.setAttribute("font-weight", "bold");
+    txtA.setAttribute("text-anchor", "middle");
+    txtA.setAttribute("fill", "var(--dark)");
+    txtA.textContent = "甲組";
+    svg.appendChild(txtA);
+
+    // 乙組 (x 中心 140)
+    drawNet(125, 30, false);
+    const txtB = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txtB.setAttribute("x", "140");
+    txtB.setAttribute("y", "150");
+    txtB.setAttribute("font-size", "11");
+    txtB.setAttribute("font-weight", "bold");
+    txtB.setAttribute("text-anchor", "middle");
+    txtB.setAttribute("fill", "var(--dark)");
+    txtB.textContent = "乙組";
+    svg.appendChild(txtB);
+
+    function drawNet(startX, startY, isCorrect) {
+      // 繪製中間長方體面
+      // 面 1: 正方形 20x20
+      drawRect(startX + 10, startY, 20, 20, "var(--primary-light)");
+      // 面 2: 長方形 20x30
+      drawRect(startX + 10, startY + 20, 20, 30, "var(--primary)");
+      // 面 3: 正方形 20x20
+      drawRect(startX + 10, startY + 50, 20, 20, "var(--primary-light)");
+      // 面 4: 長方形 20x30
+      drawRect(startX + 10, startY + 70, 20, 30, "var(--primary)");
+
+      // 左右兩翼
+      // 左翼 (長方形 20x30，接在面 2 的左邊，所以其寬度是 30，高度是 20)
+      drawRect(startX - 20, startY + 20, 30, 20, "var(--secondary)");
+
+      if (isCorrect) {
+        // 右翼：正確長方形 30x20
+        drawRect(startX + 30, startY + 20, 30, 20, "var(--secondary)");
+      } else {
+        // 右翼：錯誤三角形
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        poly.setAttribute("points", `${startX+30},${startY+20} ${startX+60},${startY+30} ${startX+30},${startY+40}`);
+        poly.setAttribute("fill", "var(--danger)");
+        poly.setAttribute("stroke", "var(--dark)");
+        poly.setAttribute("stroke-width", "1");
+        svg.appendChild(poly);
+      }
+    }
+
+    function drawRect(rx, ry, w, h, color) {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", rx);
+      rect.setAttribute("y", ry);
+      rect.setAttribute("width", w);
+      rect.setAttribute("height", h);
+      rect.setAttribute("fill", color);
+      rect.setAttribute("stroke", "var(--dark)");
+      rect.setAttribute("stroke-width", "1");
+      svg.appendChild(rect);
+    }
+  }
+  else if (type === "clothes-tally") {
+    // 繪製衣服分類計數表表格 (2x3)
+    const gridY = [25, 55, 95, 135];
+    const gridX = [15, 65, 125, 185];
+
+    // 表格背景
+    const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bg.setAttribute("x", gridX[0]);
+    bg.setAttribute("y", gridY[0]);
+    bg.setAttribute("width", gridX[3] - gridX[0]);
+    bg.setAttribute("height", gridY[3] - gridY[0]);
+    bg.setAttribute("fill", "var(--light)");
+    bg.setAttribute("rx", "6");
+    svg.appendChild(bg);
+
+    // 畫表格線條
+    for (let i = 0; i < gridY.length; i++) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", gridX[0]);
+      line.setAttribute("y1", gridY[i]);
+      line.setAttribute("x2", gridX[3]);
+      line.setAttribute("y2", gridY[i]);
+      line.setAttribute("stroke", "var(--dark)");
+      line.setAttribute("stroke-width", "1.5");
+      svg.appendChild(line);
+    }
+    for (let i = 0; i < gridX.length; i++) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", gridX[i]);
+      line.setAttribute("y1", gridY[0]);
+      line.setAttribute("x2", gridX[i]);
+      line.setAttribute("y2", gridY[3]);
+      line.setAttribute("stroke", "var(--dark)");
+      line.setAttribute("stroke-width", "1.5");
+      svg.appendChild(line);
+    }
+
+    // 填充標題文字
+    drawTableHeaderText("類別", (gridX[0]+gridX[1])/2, 43);
+    drawTableHeaderText("短袖 / 短褲", (gridX[1]+gridX[2])/2, 43);
+    drawTableHeaderText("長袖 / 長褲", (gridX[2]+gridX[3])/2, 43);
+
+    // 填充第一列 (上衣 👕)
+    drawTableHeaderText("👕 上衣", (gridX[0]+gridX[1])/2, 79);
+    // 短袖上衣 4 件
+    drawTally(gridX[1] + 15, gridY[1] + 10, 4);
+    // 長袖上衣 2 件
+    drawTally(gridX[2] + 25, gridY[1] + 10, 2);
+
+    // 填充第二列 (褲子 🩳)
+    drawTableHeaderText("🩳 褲子", (gridX[0]+gridX[1])/2, 119);
+    // 短褲 3 件
+    drawTally(gridX[1] + 20, gridY[2] + 10, 3);
+    // 長褲 5 件 (畫「正」字記號)
+    drawTallyChinese(gridX[2] + 20, gridY[2] + 10);
+
+    function drawTableHeaderText(text, tx, ty) {
+      const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txt.setAttribute("x", tx);
+      txt.setAttribute("y", ty);
+      txt.setAttribute("font-size", "11");
+      txt.setAttribute("font-weight", "bold");
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("fill", "var(--dark)");
+      txt.textContent = text;
+      svg.appendChild(txt);
+    }
+
+    function drawTally(tx, ty, count) {
+      for (let i = 0; i < count; i++) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        const xOffset = i * 8;
+        line.setAttribute("x1", tx + xOffset);
+        line.setAttribute("y1", ty + 2);
+        line.setAttribute("x2", tx + xOffset + 2);
+        line.setAttribute("y2", ty + 18);
+        line.setAttribute("stroke", "var(--secondary)");
+        line.setAttribute("stroke-width", "2.5");
+        line.setAttribute("stroke-linecap", "round");
+        svg.appendChild(line);
+      }
+    }
+
+    function drawTallyChinese(tx, ty) {
+      // 繪製「正」字
+      const lines = [
+        { x1: tx, y1: ty+2, x2: tx+20, y2: ty+2 },       // 橫
+        { x1: tx+10, y1: ty+2, x2: tx+10, y2: ty+18 },   // 豎
+        { x1: tx, y1: ty+10, x2: tx+10, y2: ty+10 },     // 中橫
+        { x1: tx, y1: ty+10, x2: tx, y2: ty+18 },       // 左豎
+        { x1: tx, y1: ty+18, x2: tx+20, y2: ty+18 }      // 底橫
+      ];
+      lines.forEach((l) => {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", l.x1);
+        line.setAttribute("y1", l.y1);
+        line.setAttribute("x2", l.x2);
+        line.setAttribute("y2", l.y2);
+        line.setAttribute("stroke", "var(--primary)");
+        line.setAttribute("stroke-width", "2.5");
+        line.setAttribute("stroke-linecap", "round");
+        svg.appendChild(line);
+      });
+    }
+  }
+  else if (type === "marbles-subtraction") {
+    // 繪製 24 顆彈珠減法分裝
+    const textFormula = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    textFormula.setAttribute("x", "100");
+    textFormula.setAttribute("y", "25");
+    textFormula.setAttribute("font-size", "12");
+    textFormula.setAttribute("font-weight", "bold");
+    textFormula.setAttribute("text-anchor", "middle");
+    textFormula.setAttribute("fill", "var(--dark)");
+    textFormula.textContent = "24 - 6 - 6 - 6 - 6 = 0";
+    svg.appendChild(textFormula);
+
+    for (let r = 0; r < 4; r++) {
+      const ry = 48 + r * 26;
+
+      const bag = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bag.setAttribute("x", "20");
+      bag.setAttribute("y", ry - 10);
+      bag.setAttribute("width", "130");
+      bag.setAttribute("height", "20");
+      bag.setAttribute("fill", "none");
+      bag.setAttribute("stroke", "var(--primary-light)");
+      bag.setAttribute("stroke-width", "1");
+      bag.setAttribute("stroke-dasharray", "3,3");
+      bag.setAttribute("rx", "6");
+      svg.appendChild(bag);
+
+      for (let c = 0; c < 6; c++) {
+        const cx = 32 + c * 20;
+
+        const marble = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        marble.setAttribute("cx", cx);
+        marble.setAttribute("cy", ry);
+        marble.setAttribute("r", "6");
+        marble.setAttribute("fill", "var(--secondary-light)");
+        marble.setAttribute("stroke", "var(--dark)");
+        marble.setAttribute("stroke-width", "1");
+        svg.appendChild(marble);
+
+        const hl = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        hl.setAttribute("cx", cx - 2);
+        hl.setAttribute("cy", ry - 2);
+        hl.setAttribute("r", "1.5");
+        hl.setAttribute("fill", "white");
+        svg.appendChild(hl);
+
+        const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line1.setAttribute("x1", cx - 5);
+        line1.setAttribute("y1", ry - 5);
+        line1.setAttribute("x2", cx + 5);
+        line1.setAttribute("y2", ry + 5);
+        line1.setAttribute("stroke", "var(--danger)");
+        line1.setAttribute("stroke-width", "1.5");
+        svg.appendChild(line1);
+
+        const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line2.setAttribute("x1", cx + 5);
+        line2.setAttribute("y1", ry - 5);
+        line2.setAttribute("x2", cx - 5);
+        line2.setAttribute("y2", ry + 5);
+        line2.setAttribute("stroke", "var(--danger)");
+        line2.setAttribute("stroke-width", "1.5");
+        svg.appendChild(line2);
+      }
+
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", "165");
+      label.setAttribute("y", ry + 4);
+      label.setAttribute("font-size", "11");
+      label.setAttribute("font-weight", "bold");
+      label.setAttribute("fill", "var(--danger)");
+      label.textContent = "- 6 顆";
+      svg.appendChild(label);
+    }
+  }
+  else if (type === "corn-division") {
+    // 繪製玉米分配：甲（5根），乙（7根）
+    drawPlate(60, 95, 5, "甲 (5根)");
+    drawPlate(140, 95, 7, "乙 (7根)");
+
+    function drawPlate(px, py, count, label) {
+      const plate = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+      plate.setAttribute("cx", px);
+      plate.setAttribute("cy", py + 12);
+      plate.setAttribute("rx", "32");
+      plate.setAttribute("ry", "18");
+      plate.setAttribute("fill", "#dfe6e9");
+      plate.setAttribute("stroke", "var(--dark)");
+      plate.setAttribute("stroke-width", "1.5");
+      svg.appendChild(plate);
+
+      const plateInner = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+      plateInner.setAttribute("cx", px);
+      plateInner.setAttribute("cy", py + 12);
+      plateInner.setAttribute("rx", "26");
+      plateInner.setAttribute("ry", "13");
+      plateInner.setAttribute("fill", "none");
+      plateInner.setAttribute("stroke", "#b2bec3");
+      plateInner.setAttribute("stroke-width", "1");
+      svg.appendChild(plateInner);
+
+      for (let i = 0; i < count; i++) {
+        const offsetAngle = (i * 2 * Math.PI) / count;
+        const rx = 14 * Math.cos(offsetAngle);
+        const ry = 7 * Math.sin(offsetAngle);
+        drawMiniCorn(px + rx, py + 8 + ry, 12 - (i % 2)*24);
+      }
+
+      const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txt.setAttribute("x", px);
+      txt.setAttribute("y", py + 45);
+      txt.setAttribute("font-size", "11");
+      txt.setAttribute("font-weight", "bold");
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("fill", "var(--dark)");
+      txt.textContent = label;
+      svg.appendChild(txt);
+    }
+
+    function drawMiniCorn(cx, cy, rotation) {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("transform", `translate(${cx}, ${cy}) rotate(${rotation})`);
+
+      const c = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+      c.setAttribute("cx", "0");
+      c.setAttribute("cy", "0");
+      c.setAttribute("rx", "9");
+      c.setAttribute("ry", "4.5");
+      c.setAttribute("fill", "#ffeaa7");
+      c.setAttribute("stroke", "#d87a00");
+      c.setAttribute("stroke-width", "0.8");
+      g.appendChild(c);
+
+      const leaf = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      leaf.setAttribute("d", "M -9 0 Q -11 -3 -8 -2 Q -12 2 -9 0");
+      leaf.setAttribute("fill", "#55efc4");
+      g.appendChild(leaf);
+
+      svg.appendChild(g);
+    }
+  }
+  else if (type === "fair-share-compare") {
+    // 繪製平分比較圖：圖形 A（不均勻圓形），圖形 B（均勻正方形）
+    const cx = 55, cy = 70, r = 35;
+    
+    const circleBg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circleBg.setAttribute("cx", cx);
+    circleBg.setAttribute("cy", cy);
+    circleBg.setAttribute("r", r);
+    circleBg.setAttribute("fill", "var(--light)");
+    circleBg.setAttribute("stroke", "var(--dark)");
+    circleBg.setAttribute("stroke-width", "1.5");
+    svg.appendChild(circleBg);
+
+    const lineA1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineA1.setAttribute("x1", cx - 35);
+    lineA1.setAttribute("y1", cy - 10);
+    lineA1.setAttribute("x2", cx + 35);
+    lineA1.setAttribute("y2", cy + 15);
+    lineA1.setAttribute("stroke", "var(--dark)");
+    lineA1.setAttribute("stroke-width", "1.5");
+    svg.appendChild(lineA1);
+
+    const lineA2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineA2.setAttribute("x1", cx - 10);
+    lineA2.setAttribute("y1", cy - 33);
+    lineA2.setAttribute("x2", cx + 15);
+    lineA2.setAttribute("y2", cy + 32);
+    lineA2.setAttribute("stroke", "var(--dark)");
+    lineA2.setAttribute("stroke-width", "1.5");
+    svg.appendChild(lineA2);
+
+    const labelA = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    labelA.setAttribute("x", cx);
+    labelA.setAttribute("y", cy + 55);
+    labelA.setAttribute("font-size", "11");
+    labelA.setAttribute("font-weight", "bold");
+    labelA.setAttribute("text-anchor", "middle");
+    labelA.setAttribute("fill", "var(--dark)");
+    labelA.textContent = "圖形 A";
+    svg.appendChild(labelA);
+
+    const bx = 145, by = 70, size = 60;
+    const half = size / 2;
+
+    const rectBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rectBg.setAttribute("x", bx - half);
+    rectBg.setAttribute("y", by - half);
+    rectBg.setAttribute("width", size);
+    rectBg.setAttribute("height", size);
+    rectBg.setAttribute("fill", "var(--light)");
+    rectBg.setAttribute("stroke", "var(--dark)");
+    rectBg.setAttribute("stroke-width", "1.5");
+    svg.appendChild(rectBg);
+
+    const lineB1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineB1.setAttribute("x1", bx - half);
+    lineB1.setAttribute("y1", by - half);
+    lineB1.setAttribute("x2", bx + half);
+    lineB1.setAttribute("y2", by + half);
+    lineB1.setAttribute("stroke", "var(--dark)");
+    lineB1.setAttribute("stroke-width", "1.5");
+    svg.appendChild(lineB1);
+
+    const lineB2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineB2.setAttribute("x1", bx - half);
+    lineB2.setAttribute("y1", by + half);
+    lineB2.setAttribute("x2", bx + half);
+    lineB2.setAttribute("y2", by - half);
+    lineB2.setAttribute("stroke", "var(--dark)");
+    lineB2.setAttribute("stroke-width", "1.5");
+    svg.appendChild(lineB2);
+
+    const labelB = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    labelB.setAttribute("x", bx);
+    labelB.setAttribute("y", by + 55);
+    labelB.setAttribute("font-size", "11");
+    labelB.setAttribute("font-weight", "bold");
+    labelB.setAttribute("text-anchor", "middle");
+    labelB.setAttribute("fill", "var(--dark)");
+    labelB.textContent = "圖形 B";
+    svg.appendChild(labelB);
+  }
+  else if (type === "flag-compare") {
+    // 國旗甲 (垂直三等分，左邊塗紅)
+    const f1x = 20, f1y = 45, fw = 60, fh = 40;
+
+    const flagA = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    flagA.setAttribute("x", f1x);
+    flagA.setAttribute("y", f1y);
+    flagA.setAttribute("width", fw);
+    flagA.setAttribute("height", fh);
+    flagA.setAttribute("fill", "var(--light)");
+    flagA.setAttribute("stroke", "var(--dark)");
+    flagA.setAttribute("stroke-width", "1.5");
+    svg.appendChild(flagA);
+
+    const flagAShaded = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    flagAShaded.setAttribute("x", f1x);
+    flagAShaded.setAttribute("y", f1y);
+    flagAShaded.setAttribute("width", fw / 3);
+    flagAShaded.setAttribute("height", fh);
+    flagAShaded.setAttribute("fill", "#ff7675");
+    flagAShaded.setAttribute("stroke", "var(--dark)");
+    flagAShaded.setAttribute("stroke-width", "1.5");
+    svg.appendChild(flagAShaded);
+
+    const lineA = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineA.setAttribute("x1", f1x + (2 * fw) / 3);
+    lineA.setAttribute("y1", f1y);
+    lineA.setAttribute("x2", f1x + (2 * fw) / 3);
+    lineA.setAttribute("y2", f1y + fh);
+    lineA.setAttribute("stroke", "var(--dark)");
+    lineA.setAttribute("stroke-width", "1.5");
+    svg.appendChild(lineA);
+
+    const labelA = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    labelA.setAttribute("x", f1x + fw/2);
+    labelA.setAttribute("y", f1y + fh + 22);
+    labelA.setAttribute("font-size", "11");
+    labelA.setAttribute("font-weight", "bold");
+    labelA.setAttribute("text-anchor", "middle");
+    labelA.setAttribute("fill", "var(--dark)");
+    labelA.textContent = "國旗甲";
+    svg.appendChild(labelA);
+
+    // 國旗乙 (不規則切分)
+    const f2x = 120, f2y = 45;
+
+    const flagB = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    flagB.setAttribute("x", f2x);
+    flagB.setAttribute("y", f2y);
+    flagB.setAttribute("width", fw);
+    flagB.setAttribute("height", fh);
+    flagB.setAttribute("fill", "var(--light)");
+    flagB.setAttribute("stroke", "var(--dark)");
+    flagB.setAttribute("stroke-width", "1.5");
+    svg.appendChild(flagB);
+
+    const flagBShaded = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    flagBShaded.setAttribute("points", `${f2x},${f2y} ${f2x+15},${f2y} ${f2x+35},${f2y+fh} ${f2x},${f2y+fh}`);
+    flagBShaded.setAttribute("fill", "#ff7675");
+    flagBShaded.setAttribute("stroke", "var(--dark)");
+    flagBShaded.setAttribute("stroke-width", "1.5");
+    svg.appendChild(flagBShaded);
+
+    const lineB = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineB.setAttribute("x1", f2x + 40);
+    lineB.setAttribute("y1", f2y);
+    lineB.setAttribute("x2", f2x + 45);
+    lineB.setAttribute("y2", f2y + fh);
+    lineB.setAttribute("stroke", "var(--dark)");
+    lineB.setAttribute("stroke-width", "1.5");
+    svg.appendChild(lineB);
+
+    const labelB = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    labelB.setAttribute("x", f2x + fw/2);
+    labelB.setAttribute("y", f2y + fh + 22);
+    labelB.setAttribute("font-size", "11");
+    labelB.setAttribute("font-weight", "bold");
+    labelB.setAttribute("text-anchor", "middle");
+    labelB.setAttribute("fill", "var(--dark)");
+    labelB.textContent = "國旗乙";
+    svg.appendChild(labelB);
+  }
+  else if (type === "paper-compare") {
+    // 繪製莉芸 (1/8) 與 子翔 (1/4) 的壁報紙比較
+    const px1 = 20, py = 45, pw = 60, ph = 40;
+
+    const paperA = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    paperA.setAttribute("x", px1);
+    paperA.setAttribute("y", py);
+    paperA.setAttribute("width", pw);
+    paperA.setAttribute("height", ph);
+    paperA.setAttribute("fill", "var(--light)");
+    paperA.setAttribute("stroke", "var(--dark)");
+    paperA.setAttribute("stroke-width", "1.5");
+    svg.appendChild(paperA);
+
+    const paperAShaded = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    paperAShaded.setAttribute("x", px1);
+    paperAShaded.setAttribute("y", py);
+    paperAShaded.setAttribute("width", pw);
+    paperAShaded.setAttribute("height", ph / 8);
+    paperAShaded.setAttribute("fill", "var(--primary-light)");
+    paperAShaded.setAttribute("stroke", "var(--dark)");
+    paperAShaded.setAttribute("stroke-width", "1");
+    svg.appendChild(paperAShaded);
+
+    for (let i = 1; i < 8; i++) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", px1);
+      line.setAttribute("y1", py + (i * ph) / 8);
+      line.setAttribute("x2", px1 + pw);
+      line.setAttribute("y2", py + (i * ph) / 8);
+      line.setAttribute("stroke", "var(--dark)");
+      line.setAttribute("stroke-width", "1");
+      svg.appendChild(line);
+    }
+
+    const labelA = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    labelA.setAttribute("x", px1 + pw/2);
+    labelA.setAttribute("y", py + ph + 22);
+    labelA.setAttribute("font-size", "10");
+    labelA.setAttribute("font-weight", "bold");
+    labelA.setAttribute("text-anchor", "middle");
+    labelA.setAttribute("fill", "var(--dark)");
+    labelA.textContent = "莉芸 (1/8)";
+    svg.appendChild(labelA);
+
+    const px2 = 120;
+
+    const paperB = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    paperB.setAttribute("x", px2);
+    paperB.setAttribute("y", py);
+    paperB.setAttribute("width", pw);
+    paperB.setAttribute("height", ph);
+    paperB.setAttribute("fill", "var(--light)");
+    paperB.setAttribute("stroke", "var(--dark)");
+    paperB.setAttribute("stroke-width", "1.5");
+    svg.appendChild(paperB);
+
+    const paperBShaded = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    paperBShaded.setAttribute("x", px2);
+    paperBShaded.setAttribute("y", py);
+    paperBShaded.setAttribute("width", pw);
+    paperBShaded.setAttribute("height", ph / 4);
+    paperBShaded.setAttribute("fill", "var(--primary-light)");
+    paperBShaded.setAttribute("stroke", "var(--dark)");
+    paperBShaded.setAttribute("stroke-width", "1");
+    svg.appendChild(paperBShaded);
+
+    for (let i = 1; i < 4; i++) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", px2);
+      line.setAttribute("y1", py + (i * ph) / 4);
+      line.setAttribute("x2", px2 + pw);
+      line.setAttribute("y2", py + (i * ph) / 4);
+      line.setAttribute("stroke", "var(--dark)");
+      line.setAttribute("stroke-width", "1");
+      svg.appendChild(line);
+    }
+
+    const labelB = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    labelB.setAttribute("x", px2 + pw/2);
+    labelB.setAttribute("y", py + ph + 22);
+    labelB.setAttribute("font-size", "10");
+    labelB.setAttribute("font-weight", "bold");
+    labelB.setAttribute("text-anchor", "middle");
+    labelB.setAttribute("fill", "var(--dark)");
+    labelB.textContent = "子翔 (1/4)";
+    svg.appendChild(labelB);
+  }
 
   // 渲染至網頁 DOM
   container.appendChild(svg);
