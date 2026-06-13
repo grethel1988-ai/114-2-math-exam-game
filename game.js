@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // 114-2-期末考-數學：互動式遊戲網頁核心邏輯
 // =============================================================================
 
@@ -1478,6 +1478,26 @@ function renderQuestionSVG(questionObj) {
 }
 
 // --- 介面導航切換 ---
+
+// =============================================================================
+// 海洋探險大闖關 - 新增的遊戲控制與UI邏輯 (合併版後半段)
+// =============================================================================
+
+// --- 寵物配置資料 ---
+const petConfig = {
+  nemo: { name: "小丑魚", emoji: "🐠" },
+  turtle: { name: "小海龜", emoji: "🐢" },
+  octopus: { name: "小章魚", emoji: "🐙" },
+  dolphin: { name: "小海豚", emoji: "🐬" }
+};
+
+let playerName = "小勇士";
+let selectedPet = "nemo";
+let currentLives = 5;
+let lastLoadTime = 0;
+let isAnswerChecking = false;
+
+// --- 畫面切換與控制 ---
 function showScreen(screenId) {
   playSound('click');
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -1486,67 +1506,6 @@ function showScreen(screenId) {
     target.classList.add("active");
     currentScreen = screenId;
   }
-
-  // 首頁載入時更新關卡卡片資訊
-  if (screenId === "levelSelectScreen") {
-    renderLevelGrid();
-  }
-}
-
-// --- 渲染關卡卡片網格 ---
-function renderLevelGrid() {
-  const grid = document.getElementById("levelGrid");
-  grid.innerHTML = "";
-
-  const levelConfigs = [
-    { num: 6, title: "第六單元：兩步驟問題" },
-    { num: 7, title: "第七單元：公尺與公分" },
-    { num: 8, title: "第八單元：分類與立體形體" },
-    { num: 9, title: "第九單元：分裝與平分" },
-    { num: 10, title: "第十單元：分數" }
-  ];
-
-  levelConfigs.forEach((cfg) => {
-    const stat = gameStats[`level${cfg.num}`];
-    const card = document.createElement("div");
-    card.className = "level-card";
-    card.onclick = () => startLevel(cfg.num);
-
-    const levelNum = document.createElement("div");
-    levelNum.className = "level-number";
-    levelNum.textContent = `0${cfg.num - 5}`;
-
-    const levelTitle = document.createElement("div");
-    levelTitle.className = "level-title";
-    levelTitle.textContent = cfg.title;
-
-    // 進度條
-    const progressContainer = document.createElement("div");
-    progressContainer.className = "level-progress-bar";
-    const progressFill = document.createElement("div");
-    progressFill.className = "level-progress-fill";
-    progressFill.style.width = stat.completed ? "100%" : "0%";
-    progressContainer.appendChild(progressFill);
-
-    // 星星
-    const starsContainer = document.createElement("div");
-    starsContainer.className = "level-stars";
-    for (let i = 1; i <= 3; i++) {
-      const star = document.createElement("span");
-      star.textContent = "⭐";
-      if (i <= stat.stars) {
-        star.className = "active";
-      }
-      starsContainer.appendChild(star);
-    }
-
-    card.appendChild(levelNum);
-    card.appendChild(levelTitle);
-    card.appendChild(progressContainer);
-    card.appendChild(starsContainer);
-
-    grid.appendChild(card);
-  });
 }
 
 // Fisher-Yates 洗牌演算法，確保極致的隨機性
@@ -1558,42 +1517,71 @@ function shuffleArray(array) {
   return array;
 }
 
-// --- 開始關卡挑戰 ---
-function startLevel(levelNum) {
-  currentLevel = levelNum;
-  
-  if (levelNum === 'full') {
-    // 全範圍挑戰：從 100 題中，為每個單元隨機選 10 題，共 50 題
-    const units = [6, 7, 8, 9, 10];
-    let selectedQuestions = [];
+// --- 初始化氣泡動畫背景 ---
+function initBubbles() {
+  const container = document.getElementById("bubblesContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  const count = 20;
+  for (let i = 0; i < count; i++) {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    const size = 10 + Math.random() * 25;
+    const left = Math.random() * 100;
+    const delay = Math.random() * 8;
+    const duration = 6 + Math.random() * 10;
     
-    units.forEach(u => {
-      // 篩選出該單元的所有題目
-      const unitQuestions = QUESTIONS.filter(q => q.unit === u);
-      // 隨機打亂該單元的所有題目
-      const shuffledUnit = shuffleArray([...unitQuestions]);
-      // 抽取前 10 題
-      const selected = shuffledUnit.slice(0, 10);
-      selectedQuestions = selectedQuestions.concat(selected);
-    });
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${left}%`;
+    bubble.style.animationDelay = `${delay}s`;
+    bubble.style.animationDuration = `${duration}s`;
     
-    // 再將這 50 題打亂，避免依單元順序排列
-    questionsQueue = shuffleArray(selectedQuestions);
-  } else {
-    // 單一單元練習：過濾該單元的 20 題
-    questionsQueue = QUESTIONS.filter(q => q.unit === levelNum);
+    container.appendChild(bubble);
   }
+}
+
+// --- 更新心心生命值 UI ---
+function updateLivesUI() {
+  const hearts = document.querySelectorAll("#livesContainer .heart");
+  hearts.forEach((h, idx) => {
+    if (idx < currentLives) {
+      h.classList.remove("lost");
+      h.textContent = "❤️";
+    } else {
+      h.classList.add("lost");
+      h.textContent = "🖤";
+    }
+  });
+}
+
+// --- 開始全新挑戰 ---
+function startChallenge() {
+  currentLives = 5;
+  updateLivesUI();
+
+  // 均勻隨機抽取 50 題：每個單元隨機選 10 題
+  const units = [6, 7, 8, 9, 10];
+  let selectedQuestions = [];
+  
+  units.forEach(u => {
+    const unitQuestions = QUESTIONS.filter(q => q.unit === u);
+    const shuffledUnit = shuffleArray([...unitQuestions]);
+    const selected = shuffledUnit.slice(0, 10);
+    selectedQuestions = selectedQuestions.concat(selected);
+  });
+  
+  // 再將這 50 題打亂順序，打破單元規律
+  questionsQueue = shuffleArray(selectedQuestions);
 
   currentIndex = 0;
-  score = 0;
+  score = 0; // 此處 score 當作答對題數
   streak = 0;
 
-  // 更新介面資訊
-  const badge = document.getElementById("currentUnitBadge");
-  badge.textContent = levelNum === 'full' ? "全範圍挑戰" : `單元 ${levelNum}`;
-  
-  updateScoreBadge();
-  updateStreakBadge();
+  // 更新玩伴頭像與姓名
+  document.getElementById("playNameLbl").textContent = playerName;
+  const pet = petConfig[selectedPet] || petConfig.nemo;
+  document.getElementById("playAvatarEmoji").textContent = pet.emoji;
 
   showScreen("playScreen");
   loadQuestion(0);
@@ -1602,17 +1590,22 @@ function startLevel(levelNum) {
 // --- 載入特定題目的詳細數據 ---
 function loadQuestion(index) {
   if (index >= questionsQueue.length) {
-    endGame();
+    endGame(true); // 成功完成
     return;
   }
 
   currentIndex = index;
+  isAnswerChecking = false;
   const q = questionsQueue[index];
+  lastLoadTime = Date.now(); // 記錄載入時間點
 
   // 更新進度條
   const progressFill = document.getElementById("progressBarFill");
   const percent = (index / questionsQueue.length) * 100;
   progressFill.style.width = `${percent}%`;
+
+  // 更新進度題數
+  document.getElementById("currentUnitBadge").textContent = `${index + 1} / 50`;
 
   // 渲染題目文字
   const qText = document.getElementById("questionText");
@@ -1649,55 +1642,108 @@ function loadQuestion(index) {
 
 // --- 答題判斷與回饋 ---
 function checkAnswer(selectedOption, btnElement, clickEvent) {
-  // 防止重複點擊
+  if (isAnswerChecking) return;
+  isAnswerChecking = true;
+
+  // 鎖定所有按鈕
   const buttons = document.querySelectorAll(".choice-btn");
   buttons.forEach(btn => btn.disabled = true);
+
+  // 防亂猜監測 (限制答題時間少於 1.2 秒)
+  const timeSpent = (Date.now() - lastLoadTime) / 1000;
+  if (timeSpent < 1.2) {
+    playSound('wrong');
+    btnElement.classList.add("wrong");
+    currentLives--;
+    updateLivesUI();
+    
+    // 震動答題卡片
+    document.getElementById("questionCard").classList.add("shake-animation");
+    
+    // 彈出防亂猜警告
+    const modal = document.getElementById("feedbackModal");
+    document.getElementById("feedbackIcon").textContent = "⚠️";
+    const title = document.getElementById("feedbackTitle");
+    title.textContent = "檢測到亂猜行為！";
+    title.style.color = "var(--danger)";
+    
+    document.getElementById("feedbackBody").innerHTML = `
+      <strong>防亂猜機制警告：</strong><br>
+      您僅用了 ${timeSpent.toFixed(2)} 秒就作答！請仔細閱讀題目與思考，不要隨便亂猜。<br>
+      生命值扣除 1 點！(剩餘生命：${currentLives} 點)
+    `;
+    
+    modal.classList.add("active");
+    
+    if (currentLives <= 0) {
+      document.getElementById("feedbackCloseBtn").onclick = () => {
+        modal.classList.remove("active");
+        document.getElementById("questionCard").classList.remove("shake-animation");
+        endGame(false); // 失敗結束
+      };
+    } else {
+      document.getElementById("feedbackCloseBtn").onclick = () => {
+        modal.classList.remove("active");
+        document.getElementById("questionCard").classList.remove("shake-animation");
+        isAnswerChecking = false;
+        loadQuestion(currentIndex); // 重新作答此題
+      };
+    }
+    return;
+  }
 
   const q = questionsQueue[currentIndex];
   const isCorrect = selectedOption === q.answer;
 
   if (isCorrect) {
-    // 答對了！
     playSound('correct');
     btnElement.classList.add("correct");
     streak++;
-    score += (10 + Math.min(streak - 1, 5)); // 答對得 10 分 + 連擊加分 (上限加 5 分)
+    score++; // 答對題數
     
     // 噴灑星星特效
     if (clickEvent) {
-      // 取得點擊按鈕的相對坐標
       const rect = document.getElementById("playScreen").getBoundingClientRect();
       const x = clickEvent.clientX - rect.left;
       const y = clickEvent.clientY - rect.top;
       createSparks(x, y);
     }
     
-    updateScoreBadge();
-    updateStreakBadge();
-
     // 彈出解析對話框
     setTimeout(() => {
       showFeedbackModal(true, q.explanation);
     }, 600);
   } else {
-    // 答錯了！
     playSound('wrong');
     btnElement.classList.add("wrong");
     document.getElementById("questionCard").classList.add("shake-animation");
     
-    // 尋找並標記正確選項
+    // 標記正確選項
     buttons.forEach(btn => {
       if (btn.querySelector("span:nth-child(2)").textContent === q.answer) {
         btn.classList.add("correct");
       }
     });
 
-    streak = 0; // 重設連擊
-    updateStreakBadge();
+    streak = 0;
+    currentLives--;
+    updateLivesUI();
 
-    // 彈出解析對話框
     setTimeout(() => {
-      showFeedbackModal(false, q.explanation);
+      if (currentLives <= 0) {
+        // 生命值歸零，顯示詳解後進入失敗結算
+        showFeedbackModal(false, q.explanation);
+        document.getElementById("feedbackCloseBtn").onclick = () => {
+          document.getElementById("feedbackModal").classList.remove("active");
+          document.getElementById("questionCard").classList.remove("shake-animation");
+          endGame(false);
+        };
+      } else {
+        showFeedbackModal(false, q.explanation);
+        document.getElementById("feedbackCloseBtn").onclick = () => {
+          nextQuestion();
+        };
+      }
     }, 1000);
   }
 }
@@ -1721,90 +1767,59 @@ function showFeedbackModal(isCorrect, explanation) {
 
   body.innerHTML = `<strong>解析說明：</strong><br>${explanation}`;
   modal.classList.add("active");
+
+  document.getElementById("feedbackCloseBtn").onclick = () => {
+    nextQuestion();
+  };
 }
 
 // --- 關閉 Modal 並載入下一題 ---
 function nextQuestion() {
   document.getElementById("feedbackModal").classList.remove("active");
   document.getElementById("questionCard").classList.remove("shake-animation");
-  
-  // 載入下一題
   loadQuestion(currentIndex + 1);
 }
 
-// --- 結算與結束關卡 ---
-function endGame() {
-  playSound('success');
+// --- 結算與結束遊戲 ---
+function endGame(isSuccess) {
+  const certBox = document.getElementById("certificateBox");
+  const gameOverBox = document.getElementById("gameOverBox");
 
-  const finalScore = Math.round((score / (questionsQueue.length * 15)) * 100); // 歸一化最高分數
-  const displayScore = Math.min(finalScore, 100); // 確保不爆表
-  
-  // 評估星星數
-  let stars = 1;
-  if (displayScore >= 80) stars = 2;
-  if (displayScore === 100) stars = 3;
+  const displayScore = score * 2; // 50題，每題2分，最高100分
 
-  // 更新並儲存關卡紀錄
-  const key = currentLevel === 'full' ? 'full' : `level${currentLevel}`;
-  const stat = gameStats[key];
-  stat.completed = true;
-  stat.bestScore = Math.max(stat.bestScore, displayScore);
-  stat.stars = Math.max(stat.stars, stars);
-  saveStats();
+  if (isSuccess) {
+    playSound('success');
+    certBox.style.display = "block";
+    gameOverBox.style.display = "none";
 
-  // 更新結算介面
-  const emoji = document.getElementById("resultEmoji");
-  const title = document.getElementById("resultScoreText");
-  const msg = document.getElementById("resultMsg");
+    // 渲染證書資訊
+    document.getElementById("certPlayerName").textContent = playerName;
+    document.getElementById("certCorrectCount").textContent = score;
+    document.getElementById("certScore").textContent = displayScore;
 
-  if (displayScore === 100) {
-    emoji.textContent = "👑";
-    title.textContent = "完美通關！100分！";
-    msg.textContent = `您真是一個數學小神童！完美答對所有題目，拿到了 3 顆星的滿分榮譽！`;
-  } else if (displayScore >= 80) {
-    emoji.textContent = "🥇";
-    title.textContent = `優秀的成績！${displayScore}分`;
-    msg.textContent = `非常出色！您在本次挑戰中表現非常亮眼，獲得了 2 顆星。繼續加油就可以拿到滿分囉！`;
+    const pet = petConfig[selectedPet] || petConfig.nemo;
+    document.getElementById("certPetEmoji").textContent = pet.emoji;
+    document.getElementById("certPetName").textContent = `${pet.name} 陪你一起挑戰成功！`;
   } else {
-    emoji.textContent = "🥈";
-    title.textContent = `挑戰完成！${displayScore}分`;
-    msg.textContent = `完成了全部題目的作答。多練習幾次，一定會考得更好的！`;
+    playSound('wrong');
+    certBox.style.display = "none";
+    gameOverBox.style.display = "block";
+
+    // 渲染失敗資訊
+    document.getElementById("failCorrectCount").textContent = score;
+    document.getElementById("failScoreText").textContent = `目前得分：${displayScore} 分`;
+    
+    // 依據選擇的寵物顯示沮喪的表情
+    const pet = petConfig[selectedPet] || petConfig.nemo;
+    document.getElementById("failEmoji").textContent = pet.emoji;
+    document.getElementById("failTitle").textContent = `${pet.name} 提醒你：大冒險中斷！`;
   }
 
   showScreen("resultsScreen");
 }
 
-// --- 資訊徽章數據更新 ---
-function updateScoreBadge() {
-  document.getElementById("scoreBadge").textContent = `🌟 分數 ${score}`;
-}
-
-function updateStreakBadge() {
-  const badge = document.getElementById("streakBadge");
-  badge.textContent = `🔥 連擊 ${streak}`;
-  if (streak > 0) {
-    badge.style.display = "flex";
-  } else {
-    badge.style.display = "none";
-  }
-}
-
-// --- LocalStorage 讀取與儲存 ---
-function saveStats() {
-  localStorage.setItem("antigravity_math_stats", JSON.stringify(gameStats));
-}
-
-function loadStats() {
-  const saved = localStorage.getItem("antigravity_math_stats");
-  if (saved) {
-    try {
-      gameStats = JSON.parse(saved);
-    } catch (e) {
-      console.error("無法解析進度紀錄", e);
-    }
-  }
-
-  // 讀取設定
+// --- 事件儲存與讀取 (簡化設定，無單元進度) ---
+function loadSettings() {
   const savedSound = localStorage.getItem("soundEnabled");
   if (savedSound !== null) {
     soundEnabled = savedSound === "true";
@@ -1822,34 +1837,30 @@ function updateSoundBtn() {
   document.getElementById("soundToggleBtn").textContent = soundEnabled ? "🔊" : "🔇";
 }
 
-// --- 事件綁定與初始載入 ---
+// --- 事件載入與綁定 ---
 document.addEventListener("DOMContentLoaded", () => {
-  // 載入進度數據
-  loadStats();
+  // 載入系統設定
+  loadSettings();
 
-  // 首頁開始按鈕
+  // 初始化氣泡
+  initBubbles();
+
+  // 綁定寵物卡片選擇
+  document.querySelectorAll("#petGrid .pet-card").forEach(card => {
+    card.onclick = () => {
+      document.querySelectorAll("#petGrid .pet-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      selectedPet = card.dataset.pet;
+      playSound('click');
+    };
+  });
+
+  // 開始挑戰按鈕綁定
   document.getElementById("startPlayBtn").onclick = () => {
-    showScreen("levelSelectScreen");
-  };
-
-  // 全範圍挑戰按鈕
-  document.getElementById("fullChallengeBtn").onclick = () => {
-    startLevel('full');
-  };
-
-  // 結算畫面重新挑戰按鈕
-  document.getElementById("restartLevelBtn").onclick = () => {
-    startLevel(currentLevel);
-  };
-
-  // 結算返回單元選擇
-  document.getElementById("returnLevelSelectBtn").onclick = () => {
-    showScreen("levelSelectScreen");
-  };
-
-  // Modal 繼續按鈕
-  document.getElementById("feedbackCloseBtn").onclick = () => {
-    nextQuestion();
+    const nameInput = document.getElementById("playerNameInput").value.trim();
+    playerName = nameInput || "小勇士";
+    playSound('click');
+    startChallenge();
   };
 
   // 音效開關按鈕
@@ -1868,23 +1879,14 @@ document.addEventListener("DOMContentLoaded", () => {
     playSound('click');
   };
 
-  // 重設所有進度按鈕
-  document.getElementById("resetProgressBtn").onclick = () => {
-    if (confirm("您確定要重設所有的單元關卡星數與闖關進度嗎？此操作不可還原。")) {
-      gameStats = {
-        level6: { completed: false, bestScore: 0, stars: 0 },
-        level7: { completed: false, bestScore: 0, stars: 0 },
-        level8: { completed: false, bestScore: 0, stars: 0 },
-        level9: { completed: false, bestScore: 0, stars: 0 },
-        level10: { completed: false, bestScore: 0, stars: 0 },
-        full: { completed: false, bestScore: 0, stars: 0 }
-      };
-      saveStats();
-      if (currentScreen === "levelSelectScreen") {
-        renderLevelGrid();
-      }
-      playSound('correct');
-      alert("所有進度已重設成功！");
-    }
+  // 結算畫面重新挑戰
+  document.getElementById("restartLevelBtn").onclick = () => {
+    startChallenge();
+  };
+
+  // 結算畫面返回首頁
+  document.getElementById("returnHomeBtn").onclick = () => {
+    showScreen("homeScreen");
   };
 });
+

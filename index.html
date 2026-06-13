@@ -3,70 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>114-2 期末考數學：互動遊戲題庫</title>
+  <title>114-2 期末考數學：海洋探險大闖關</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- 🌊 海洋氣泡背景容器 -->
+  <div class="bubbles-container" id="bubblesContainer"></div>
+
   <div class="app-container">
     
     <!-- Top Header Controls (Always Visible) -->
     <header class="app-header">
       <div class="logo-text">
-        <span>✏️</span> 數學小達人闖關賽
+        <span>🐳</span> 海洋數學小勇士
       </div>
       <div class="controls">
         <button id="soundToggleBtn" class="icon-btn" title="音效開/關">🔊</button>
         <button id="themeToggleBtn" class="icon-btn" title="切換深淺色模式">🌓</button>
-        <button id="resetProgressBtn" class="icon-btn" title="重設所有進度" style="color: var(--danger)">🗑️</button>
+        <button id="resetProgressBtn" class="icon-btn" title="重設所有進度" style="color: var(--danger); display: none;">🗑️</button>
       </div>
     </header>
 
     <!-- 1. HOME SCREEN -->
     <div id="homeScreen" class="screen active">
       <div class="home-content">
-        <div style="font-size: 5rem; margin-bottom: 15px; animation: float 3s infinite ease-in-out">🎓</div>
-        <h1 class="game-title">114-2期末考<br>數學重點大闖關</h1>
+        <div style="font-size: 5rem; margin-bottom: 15px; animation: float 3s infinite ease-in-out">🐳</div>
+        <h1 class="game-title">二年級數學期末考<br>海洋探險大闖關</h1>
         <p class="game-desc">
-          歡迎來到數學挑戰賽！本遊戲專為國小二年級期末考設計，包含兩步驟問題、公尺與公分、分類與立體形體、分裝與平分、分數等 5 大單元共 100 題。讓我們一起邊玩邊複習，拿滿分吧！
+          歡迎來到海洋數學挑戰賽！請填寫姓名並選擇一位寵物夥伴，陪你一起均勻隨機挑戰 5 大單元的 50 題數學關卡。仔細看題，不要亂猜，生命值歸零就失敗囉！
         </p>
+        
+        <!-- 🐾 玩家設定與寵物選擇區 -->
+        <div class="player-setup-box">
+          <div class="form-group">
+            <label class="form-label" for="playerNameInput">✍️ 輸入你的姓名：</label>
+            <input type="text" id="playerNameInput" class="name-input" placeholder="請輸入姓名..." maxlength="8">
+          </div>
+          <div class="form-group">
+            <label class="form-label">🐠 選擇你的海洋夥伴：</label>
+            <div class="pet-grid" id="petGrid">
+              <div class="pet-card selected" data-pet="nemo">
+                <span class="pet-emoji">🐠</span>
+                <span class="pet-name">小丑魚</span>
+              </div>
+              <div class="pet-card" data-pet="turtle">
+                <span class="pet-emoji">🐢</span>
+                <span class="pet-name">小海龜</span>
+              </div>
+              <div class="pet-card" data-pet="octopus">
+                <span class="pet-emoji">🐙</span>
+                <span class="pet-name">小章魚</span>
+              </div>
+              <div class="pet-card" data-pet="dolphin">
+                <span class="pet-emoji">🐬</span>
+                <span class="pet-name">小海豚</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button id="startPlayBtn" class="start-btn">
           <span>🎮</span> 開始挑戰
         </button>
       </div>
     </div>
 
-    <!-- 2. LEVEL SELECT SCREEN -->
+    <!-- 2. LEVEL SELECT SCREEN (Kept for routing compatibility but visually bypassed) -->
     <div id="levelSelectScreen" class="screen">
-      <div class="back-nav" onclick="showScreen('homeScreen')">
-        <span>⬅️</span> 返回首頁
-      </div>
-      <h2 class="level-select-title">🎯 請選擇闖關單元</h2>
-      <div class="level-grid" id="levelGrid">
-        <!-- Level cards will be programmatically rendered here -->
-      </div>
-      <div class="text-center" style="margin-top: 10px;">
-        <button id="fullChallengeBtn" class="start-btn" style="background: linear-gradient(135deg, var(--secondary), #00cec9); margin: 0 auto;">
-          <span>🔥</span> 全範圍隨機大挑戰 (50題)
-        </button>
-      </div>
+      <!-- Bypassed in JS -->
     </div>
 
     <!-- 3. PLAY SCREEN -->
     <div id="playScreen" class="screen">
       <!-- Game Info Bar -->
       <div class="game-info-bar">
-        <div class="badge" id="currentUnitBadge" style="background: rgba(108, 92, 231, 0.1); color: var(--primary)">
-          單元 6
+        <!-- 玩家頭像與姓名 -->
+        <div class="player-avatar-badge">
+          <span class="player-avatar-emoji" id="playAvatarEmoji">🐠</span>
+          <span class="player-name-lbl" id="playNameLbl">小明</span>
         </div>
+        
+        <!-- 答題進度條 -->
         <div class="progress-container">
           <div id="progressBarFill" class="progress-bar-fill"></div>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <div class="badge streak" id="streakBadge">
-            🔥 連擊 0
-          </div>
-          <div class="badge score" id="scoreBadge" style="color: var(--secondary)">
-            🌟 分數 0
+        
+        <!-- 生命值心心 -->
+        <div class="lives-container" id="livesContainer">
+          <span class="heart" data-index="0">❤️</span>
+          <span class="heart" data-index="1">❤️</span>
+          <span class="heart" data-index="2">❤️</span>
+          <span class="heart" data-index="3">❤️</span>
+          <span class="heart" data-index="4">❤️</span>
+        </div>
+        
+        <!-- 題數狀態 -->
+        <div style="display: flex; gap: 8px; margin-left: 10px;">
+          <div class="badge" id="currentUnitBadge" style="background: rgba(9, 132, 227, 0.1); color: var(--primary); font-size: 1.05rem;">
+            1 / 50
           </div>
         </div>
       </div>
@@ -93,18 +127,45 @@
     <!-- 4. RESULTS SCREEN -->
     <div id="resultsScreen" class="screen">
       <div class="result-content">
-        <div class="result-emoji" id="resultEmoji">🎉</div>
-        <h2 class="score-text" id="resultScoreText">挑戰成功！</h2>
-        <p class="result-msg" id="resultMsg">
-          您完成了本次挑戰，答對了 18 題，獲得 90 分！繼續保持喔！
-        </p>
+        <!-- 🏆 挑戰成功：精美獎狀 -->
+        <div id="certificateBox" class="certificate-card">
+          <h2 class="certificate-header">海洋數學達人證書</h2>
+          <p class="certificate-sub">Certificate of Mathematics Master</p>
+          <div class="certificate-body">
+            恭喜 <span class="certificate-name" id="certPlayerName">小明</span> 小朋友：<br>
+            在本次「二年級數學期末考海洋大闖關」中，憑藉著聰明與智慧，成功解答了 <span class="certificate-score" id="certCorrectCount">50</span> 題數學挑戰，獲得了 <span class="certificate-score" id="certScore">100</span> 分！特頒此證，以資鼓勵！
+          </div>
+          <div class="certificate-pet-partner">
+            <span class="certificate-pet-emoji" id="certPetEmoji">🐠</span>
+            <span class="certificate-pet-txt" id="certPetName">小丑魚 陪你一起挑戰成功！</span>
+          </div>
+          <div class="certificate-seal">
+            <div class="certificate-seal-inner">
+              <span>田寮區</span>
+              <span>新興國小</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 💀 挑戰失敗：生命值歸零 -->
+        <div id="gameOverBox" class="fail-box" style="display: none;">
+          <div class="fail-emoji" id="failEmoji">🐙</div>
+          <h2 class="fail-title" id="failTitle">海洋大冒險中斷！</h2>
+          <p class="fail-text">
+            別氣餒！生命值在挑戰中不小心用完了。不過你已經成功答對了 <span id="failCorrectCount" style="font-weight: 800; color: var(--danger);">0</span> 題！
+          </p>
+          <div class="score-badge-fail" id="failScoreText">目前得分：0 分</div>
+          <p class="fail-text" style="font-size: 0.95rem; opacity: 0.8;">
+            答題時一定要認真思考，不要隨便亂猜，相信你下一次一定能成功拿到獎狀！
+          </p>
+        </div>
         
         <div class="result-actions">
           <button id="restartLevelBtn" class="start-btn">
-            <span>🔄</span> 重新挑戰本關
+            <span>🔄</span> 重新挑戰
           </button>
-          <button id="returnLevelSelectBtn" class="flat-btn">
-            <span>🎯</span> 選擇其他單元
+          <button id="returnHomeBtn" class="flat-btn">
+            <span>🏠</span> 返回首頁
           </button>
         </div>
       </div>
@@ -120,7 +181,7 @@
       <p class="modal-body" id="feedbackBody">
         解析內容加載中...
       </p>
-      <button id="feedbackCloseBtn" class="modal-btn">繼續下挑戰</button>
+      <button id="feedbackCloseBtn" class="modal-btn">繼續挑戰</button>
     </div>
   </div>
 

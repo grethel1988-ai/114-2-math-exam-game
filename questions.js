@@ -1,4 +1,4 @@
-const QUESTIONS = [
+﻿const QUESTIONS = [
   // ==========================================
   // 📐 第六單元：兩步驟問題 (乘與加減)
   // ==========================================
@@ -584,11 +584,11 @@ const QUESTIONS = [
     id: "u8_diagram_1",
     unit: 8,
     type: "diagram",
-    question: "小矮人回家要踩著立體圖形前進，規律是：「正方體 $\rightarrow$ 長方體 $\rightarrow$ 正方體 $\rightarrow$ 長方體」。請問他應該走哪條路線？",
-    options: ["ㄅ $\rightarrow$ ㄆ $\rightarrow$ ㄉ $\rightarrow$ ㄈ", "ㄅ $\rightarrow$ ㄆ $\rightarrow$ ㄇ $\rightarrow$ ㄈ", "ㄇ $\rightarrow$ ㄆ $\rightarrow$ ㄉ $\rightarrow$ ㄈ", "ㄅ $\rightarrow$ ㄉ $\rightarrow$ ㄆ $\rightarrow$ ㄈ"],
-    answer: "ㄅ $\rightarrow$ ㄆ $\rightarrow$ ㄉ $\rightarrow$ ㄈ",
+    question: "小矮人回家要踩著立體圖形前進，規律是：「正方體  →  長方體  →  正方體  →  長方體」。請問他應該走哪條路線？",
+    options: ["ㄅ  →  ㄆ  →  ㄉ  →  ㄈ", "ㄅ  →  ㄆ  →  ㄇ  →  ㄈ", "ㄇ  →  ㄆ  →  ㄉ  →  ㄈ", "ㄅ  →  ㄉ  →  ㄆ  →  ㄈ"],
+    answer: "ㄅ  →  ㄆ  →  ㄉ  →  ㄈ",
     optionsRaw: ["ㄅ", "ㄆ", "ㄇ", "ㄉ", "ㄈ"],
-    explanation: "符合「正(ㄅ) $\rightarrow$ 長(ㄆ) $\rightarrow$ 正(ㄉ) $\rightarrow$ 長(ㄈ)」的順序，ㄇ是球體不符合規律。",
+    explanation: "符合「正(ㄅ)  →  長(ㄆ)  →  正(ㄉ)  →  長(ㄈ)」的順序，ㄇ是球體不符合規律。",
     svgType: "dwarf-maze"
   },
   {
@@ -1125,3 +1125,4 @@ const QUESTIONS = [
     svgType: "none"
   }
 ];
+
